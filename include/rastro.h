@@ -39,13 +39,6 @@
 
 #define RST_MAX_INPUT_SIZE 1000
 
-#define RST_MICROSECONDS 1000000
-#define RST_NANOSECONDS  1000000000
-#ifdef HAVE_CLOCKGETTIME
-#define RST_CLOCK_RESOLUTION RST_NANOSECONDS
-#elif HAVE_GETTIMEOFDAY
-#define RST_CLOCK_RESOLUTION RST_MICROSECONDS
-#endif
 #define RST_EVENT_TYPE_MASK 0x3fff      /* 14 bits */
 #define RST_EVENT_INIT (-1 & RST_EVENT_TYPE_MASK)
 #define RST_EVENT_STOP (-2 & RST_EVENT_TYPE_MASK)
@@ -109,15 +102,8 @@ typedef struct rst_event {
   struct rst_file *file; // rst file from which this event was read from
 } rst_event_t;
 
-typedef struct rst_ct {
-  double a;
-  timestamp_t loc0;
-  timestamp_t ref0;
-} rst_ct_t;
-
 typedef struct rst_file {
   int fd;
-  rst_ct_t sync_time;
   char *rst_buffer_ptr;
   char *rst_buffer;
   int rst_buffer_size;
@@ -125,8 +111,6 @@ typedef struct rst_file {
   char *hostname;
   u_int64_t id1;
   u_int64_t id2;
-  timestamp_t hour;
-  timestamp_t resolution; //clock resolution
   rst_event_t event;
   char *filename; //this filename
   int id; //to be used by the output of rastro_read
@@ -145,7 +129,6 @@ typedef struct rst_rastro {
  */
 typedef struct {
   int write_first_hour;
-  timestamp_t rst_t0;
   int rst_fd;
   char *rst_buffer_ptr;
   char *rst_buffer;

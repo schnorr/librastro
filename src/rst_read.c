@@ -36,19 +36,6 @@ static char *trd_event(rst_file_t *file, rst_event_t *event)
   u_int32_t header = RST_GET(ptr, u_int32_t);
   event->type = header >> 18;
 
-  //if header contains time data with the hour, read it
-  if (header & RST_TIME_SET) {
-    timestamp_t seconds = (timestamp_t) RST_GET(ptr, timestamp_t);
-    timestamp_t resolution = (timestamp_t) RST_GET(ptr, timestamp_t);
-    file->resolution = resolution;
-    file->hour = seconds * resolution;
-  }
-
-  //read the timestamp of this event, correct it according to the last hour
-  timestamp_t precision = (timestamp_t)RST_GET(ptr, u_int64_t);
-  timestamp_t time = file->hour + precision;
-  event->timestamp = (double)time/file->resolution;
-
   int fields_in_header = RST_FIELDS_IN_FIRST;
   char field_types[100];
   int i, field_counter = 0;
@@ -101,69 +88,6 @@ static char *trd_event(rst_file_t *file, rst_event_t *event)
   return ptr;
 }
 
-// correct a timestamp according to synchronization data 
-static double rst_correct_time(rst_file_t *file, double remote)
-{
-  if (file->resolution == 0){
-    fprintf(stderr,
-            "[rastro_read] at %s, "
-            "resolution written in the trace file is zero\n",
-            __FUNCTION__);
-    return 0;
-  }
-  double loc0 = file->sync_time.loc0/file->resolution;
-  double ref0 = file->sync_time.ref0/file->resolution;
-  return file->sync_time.a * (remote - loc0) + ref0;
-}
-
-// find synchronization data from a rastro_timesync file
-static void find_timesync_data(char *filename, rst_file_t *file)
-{
-  char refhost[MAXHOSTNAMELEN];
-  char host[MAXHOSTNAMELEN];
-  timestamp_t time;
-  timestamp_t reftime;
-
-  //reset synchronization data for this file
-  file->sync_time.a = 1;
-  file->sync_time.loc0 = 0;
-  file->sync_time.ref0 = 0;
-
-  //open synchronization file for reading
-  if (filename == NULL) {
-    return;
-  }
-  FILE *ct_file = fopen(filename, "r");
-  if (ct_file == NULL) {
-    return;
-  }
-
-  //read all synchronization file, one line per time, parse it
-  while (!feof(ct_file)) {
-    if (fscanf(ct_file, "%s %lld %s %lld", refhost, &reftime, host, &time) != 4){
-      break;
-    }
-    if (strcmp(refhost, file->hostname) == 0) {
-      // this is the reference host
-      file->sync_time.ref0 = reftime;
-      file->sync_time.loc0 = reftime;
-      break;
-    }
-    if (strcmp(host, file->hostname) == 0) {
-      static int first = 1;
-      if (first) {
-        file->sync_time.ref0 = reftime;
-        file->sync_time.loc0 = time;
-        first = 0;
-      } else {
-        file->sync_time.a =
-          (double) (reftime - file->sync_time.ref0) /
-          (double) (time - file->sync_time.loc0);
-      }
-    }
-  }
-  fclose(ct_file);
-}
 
 void rst_fill_buffer(rst_file_t * file)
 {
@@ -207,9 +131,6 @@ static int rst_decode_one_event(rst_file_t *file, rst_event_t *event)
   //read one event, update the buffer pointer
   file->rst_buffer_ptr = trd_event(file, event);
 
-  //correct timestamp
-  event->timestamp = rst_correct_time(file, event->timestamp);
-
   //copy information from file to event
   event->id1 = file->id1;
   event->id2 = file->id2;
@@ -242,12 +163,6 @@ static int rst_open_one_file(char *filename,
             filename, strerror(errno));
     return RST_NOK;
   }
-
-  //reset clock synchronization data
-  //since it is used to read the first event
-  file->sync_time.a = 1.0;
-  file->sync_time.ref0 = 0;
-  file->sync_time.loc0 = 0;
 
   //the buffer_size must have space for two MAX events
   if (buffer_size < 2 * RST_MAX_EVENT_SIZE) {
@@ -289,11 +204,6 @@ static int rst_open_one_file(char *filename,
   //save the filename of this trace file
   file->filename = strdup (filename);
 
-  //find clock synchronization data, based on hostname of this trace
-  find_timesync_data(syncfilename, file);
-
-  //clock synchronization of the first event
-  file->event.timestamp = rst_correct_time(file, file->event.timestamp);
   return RST_OK;
 }
 
@@ -474,13 +384,8 @@ int rst_decode_event(rst_rastro_t *rastro, rst_event_t *event)
 void rst_print_event(rst_event_t *event)
 {
   int i;
-  if (event->file->resolution > RST_MICROSECONDS){
-    printf("%d type: %d ts: %.9f (id1=%"PRIu64",id2=%"PRIu64")\n", event->file->id,
-           event->type, event->timestamp, event->id1, event->id2);
-  }else{
-    printf("%d type: %d ts: %f (id1=%"PRIu64",id2=%"PRIu64")\n", event->file->id,
-           event->type, event->timestamp, event->id1, event->id2);
-  }
+  printf("%d type: %d (id1=%"PRIu64",id2=%"PRIu64")\n", event->file->id,
+	 event->type, event->id1, event->id2);
   if (event->ct.n_uint64 > 0) {
     printf("\tu_int64_ts-> ");
     for (i = 0; i < event->ct.n_uint64; i++) {

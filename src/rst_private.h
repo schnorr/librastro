@@ -34,8 +34,6 @@ extern int (*rastro_gettimeofday) (struct timeval *tv, struct timezone *tz);
 #define RST_RESET(ptr) (ptr->rst_buffer_ptr = ptr->rst_buffer)
 #define RST_FD(ptr) (ptr->rst_fd)
 #define RST_SET_FD(ptr, fd) (ptr->rst_fd = fd)
-#define RST_T0(ptr) (ptr->rst_t0)
-#define RST_SET_T0(ptr, t) (ptr->rst_t0 = t)
 #define RST_BUF_COUNT(ptr) (ptr->rst_buffer_ptr - ptr->rst_buffer)
 #define RST_BUF_DATA(ptr) (ptr->rst_buffer)
 #define RST_BUF_SIZE(ptr) (ptr->rst_buffer_size)

@@ -6,7 +6,6 @@ static char doc[] = "Converts aky trace files to the Paje file format";
 static char args_doc[] = "{rastro-0-0.rst rastro-1-0.rst ...}";
 
 static struct argp_option options[] = {
-  {"sync", 's', "SYNC_FILE", 0, "Synchronization file (from rastro_timesync)"},
   { 0 }
 };
 
@@ -70,10 +69,9 @@ int main (int argc, char *argv[])
               __FUNCTION__, arguments.input[i]);
       return 1;
     }else{
-      printf ("file %s, id %d, clock resolution %lld\n",
+      printf ("file %s, id %d\n",
               rastro.files[i]->filename,
-              rastro.files[i]->id,
-              rastro.files[i]->resolution);
+              rastro.files[i]->id);
     }
   }
 
