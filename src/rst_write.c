@@ -45,10 +45,12 @@ void rst_destroy_buffer(void *p)
 
 static void __rst_init(rst_buffer_t *ptr,
                        u_int64_t id1,
-                       u_int64_t id2)
+                       u_int64_t id2,
+                       const char *filename)
 {
   int fd;
   char fname[30];
+  const char *_filename;
   char hostname[MAXHOSTNAMELEN + 1];
 
   if (ptr == NULL) {
@@ -72,8 +74,13 @@ static void __rst_init(rst_buffer_t *ptr,
   bzero(ptr->rst_buffer, ptr->rst_buffer_size);
   RST_RESET(ptr);
 
-  sprintf(fname, "rastro-%" PRIu64 "-%" PRIu64 ".rst", id1, id2);
-  fd = open(fname, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+  if (!filename){
+    sprintf(fname, "rastro-%" PRIu64 "-%" PRIu64 ".rst", id1, id2);
+    _filename = fname;
+  }else{
+    _filename = filename;
+  }
+  fd = open(_filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
   if (fd == -1) {
     fprintf(stderr, "[rastro] cannot open file %s: %s\n",
             fname, strerror(errno));
@@ -88,16 +95,23 @@ static void __rst_init(rst_buffer_t *ptr,
                                                       id1, id2, hostname);
 }
 
+void rst_init_filename(const char *filename)
+{
+  rst_buffer_t *ptr;
+  ptr = (rst_buffer_t *) malloc(sizeof(rst_buffer_t));
+  __rst_init (ptr, 0, 0, filename);
+}
+
 void rst_init(u_int64_t id1, u_int64_t id2)
 {
   rst_buffer_t *ptr;
   ptr = (rst_buffer_t *) malloc(sizeof(rst_buffer_t));
-  __rst_init (ptr, id1, id2);
+  __rst_init (ptr, id1, id2, NULL);
 }
 
 void rst_init_ptr (rst_buffer_t *ptr, u_int64_t id1, u_int64_t id2)
 {
-  __rst_init (ptr, id1, id2);
+  __rst_init (ptr, id1, id2, NULL);
 }
 
 void rst_flush(rst_buffer_t * ptr)

@@ -143,6 +143,7 @@ typedef struct {
 /*
   Writing Interface
 */
+void rst_init_filename(const char *filename);
 void rst_init(u_int64_t id1, u_int64_t id2);
 void rst_init_ptr (rst_buffer_t *ptr, u_int64_t id1, u_int64_t id2);
 void rst_flush(rst_buffer_t * ptr);
