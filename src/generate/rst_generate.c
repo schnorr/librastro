@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
     fprintf(stderr,
             "[rastro_generate] at %s,"
             "error during the parsing of parameters\n",
-            __FUNCTION__);
+            __func__);
     return 1;
   }
 
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
     fprintf(stderr,
             "[rastro_generate] at %s,"
             "could not open file %s for writing\n",
-            __FUNCTION__, arguments.header_file);
+            __func__, arguments.header_file);
     return 1;
   }
 
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     fprintf(stderr,
             "[rastro_generate] at %s,"
             "could not open file %s for writing\n",
-            __FUNCTION__, arguments.implementation_file);
+            __func__, arguments.implementation_file);
     fclose (header);
     return 1;
   }
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
       fprintf(stderr,
               "[rastro_generate] at %s,"
               "could not open file %s for reading\n",
-              __FUNCTION__, arguments.from_file);
+              __func__, arguments.from_file);
       fclose (header);
       fclose (implem);
       return 1;
