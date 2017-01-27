@@ -149,7 +149,7 @@ typedef struct {
   int rst_fd;
   char *rst_buffer_ptr;
   char *rst_buffer;
-  int rst_buffer_size;
+  size_t rst_buffer_size;
   u_int64_t id1;
   u_int64_t id2;
 } rst_buffer_t;
