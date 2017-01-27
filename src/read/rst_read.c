@@ -2,8 +2,8 @@
 #include <argp.h>
 #include <rastro.h>
 
-static char doc[] = "Dump binary trace files created with librastro";
-static char args_doc[] = "{rastro-0.rst rastro-1.rst ...}";
+static char doc[] = "Converts aky trace files to the Paje file format";
+static char args_doc[] = "{rastro-0-0.rst rastro-1-0.rst ...}";
 
 static struct argp_option options[] = {
   {"sync", 's', "SYNC_FILE", 0, "Synchronization file (from rastro_timesync)"},
