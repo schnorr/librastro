@@ -35,6 +35,8 @@
 #include <sys/types.h>
 #include <pthread.h>
 #include <dirent.h>
+#include <strings.h>
+#include <string.h>
 #include <rastro_config.h>
 
 #define RST_DEFAULT_BUFFER_SIZE 102400 //in bytes
