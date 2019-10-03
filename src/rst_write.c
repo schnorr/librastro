@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <stdio.h>
+#include<signal.h>
 
 #ifndef LIBRASTRO_THREADED
 rst_buffer_t *rst_global_buffer;
@@ -141,8 +142,16 @@ static void __rst_init(rst_buffer_t *ptr,
                                                       id1, id2, hostname);
 }
 
+void rst_handle_abort_signal (int signal)
+{
+  fprintf(stderr, "[rastro] Caught ABRT signal, flush buffers.\n", signal);
+  rst_buffer_t *ptr = RST_PTR;
+  rst_flush(ptr);
+}
+
 void rst_init(u_int64_t id1, u_int64_t id2)
 {
+  signal(SIGABRT, rst_handle_abort_signal);
   rst_init_timestamp (id1, id2, &_rst_timestamping, &_rst_timeresolution);
 }
 
