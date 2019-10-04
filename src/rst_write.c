@@ -142,16 +142,16 @@ static void __rst_init(rst_buffer_t *ptr,
                                                       id1, id2, hostname);
 }
 
-void rst_handle_hangup_signal (int signal)
+void rst_handle_signal (int signal)
 {
-  fprintf(stderr, "[rastro] Caught SIGHUP signal, flush buffers.\n", signal);
+  fprintf(stderr, "[rastro] Caught USR1 signal, flush buffers.\n", signal);
   rst_buffer_t *ptr = RST_PTR;
   rst_flush(ptr);
 }
 
 void rst_init(u_int64_t id1, u_int64_t id2)
 {
-  signal(SIGHUP, rst_handle_hangup_signal);
+  signal(SIGUSR1, rst_handle_signal);
   rst_init_timestamp (id1, id2, &_rst_timestamping, &_rst_timeresolution);
 }
 
