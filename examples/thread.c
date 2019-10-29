@@ -4,17 +4,21 @@
 #include <assert.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <rastro.h>
 
 #define NUM_THREADS 5
 
 void *perform_work(void *arguments){
   int index = *((int *)arguments);
+  rst_init(index, index);
+  rst_event(3);
   int sleep_time = 1 + rand() % NUM_THREADS;
   printf("THREAD %d: Started.\n", index);
   printf("THREAD %d: Will be sleeping for %d seconds.\n", index, sleep_time);
   sleep(sleep_time);
   printf("THREAD %d: Ended.\n", index);
-  
+  rst_event(4);
+  rst_finalize();
 }
 
 int main(void) {
@@ -22,6 +26,9 @@ int main(void) {
   int thread_args[NUM_THREADS];
   int i;
   int result_code;
+
+  rst_init(NUM_THREADS+1, NUM_THREADS+1);
+  rst_event(1);
   
   //create all threads one by one
   for (i = 0; i < NUM_THREADS; i++) {
@@ -41,5 +48,7 @@ int main(void) {
   }
 
   printf("MAIN program has ended.\n");
+  rst_event(2);
+  rst_finalize();
   return 0;
 }
