@@ -11,6 +11,6 @@ $ make
 $ make install
 
 You may also use ccmake (or any other graphical interface to cmake
-configuration) to customize your installation. The rastro's THREADED
-option should only be activated if you need to trace an application
-that uses pthreads.
+configuration) to customize your installation. Librastro is equipped
+to trace sequential of threaded applications (using __thread support
+from modern compilers).
