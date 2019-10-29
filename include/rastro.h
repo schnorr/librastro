@@ -277,14 +277,8 @@ int rst_generate (char *types[], int types_len, FILE *header, FILE *implem, char
 		ptr->rst_buffer_ptr = ALIGN_PTR(__s1); 	\
 	} while(0)
 
-#ifndef LIBRASTRO_THREADED
-extern rst_buffer_t *rst_global_buffer;
-#define RST_PTR (rst_global_buffer)
-#define RST_SET_PTR(ptr) (rst_global_buffer = ptr)
-#else
 extern __thread rst_buffer_t *rst_key;
 #define RST_PTR ((rst_buffer_t*)rst_key)
 #define RST_SET_PTR(ptr) (rst_key=(ptr));
-#endif
 
 #endif                          //_RASTRO_H_

@@ -23,11 +23,7 @@
 #include <stdio.h>
 #include<signal.h>
 
-#ifndef LIBRASTRO_THREADED
-rst_buffer_t *rst_global_buffer;
-#else
 __thread rst_buffer_t *rst_key = NULL;
-#endif
 
 static void rst_event_lls_ptr(rst_buffer_t * ptr, u_int16_t type,
                               u_int64_t l0, u_int64_t l1, char *s0);
@@ -88,13 +84,6 @@ static void __rst_init(rst_buffer_t *ptr,
     fprintf(stderr, "[rastro] error inicializing - invalid pointer\n");
     return;
   }
-#ifdef LIBRASTRO_THREADED
-  static int rst_key_initialized = 0;
-  if (!rst_key_initialized) {
-    rst_key = NULL;
-    rst_key_initialized = 1;
-  }
-#endif
 
   //define the timestamp function to be used by librastro
   rastro_timestamping = stamping;
