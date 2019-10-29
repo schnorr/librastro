@@ -237,7 +237,7 @@ void rst_event(u_int16_t type)
 
 void rst_event_ptr(rst_buffer_t * ptr, u_int16_t type)
 {
-/*...2 para finalizar esse rastro que so tem o tipo...*/
+/*...2 to finalize this event that has only the event type...*/
   rst_startevent(ptr, type << 18 | 0x20000);
   rst_endevent(ptr);
 }
