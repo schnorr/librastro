@@ -26,7 +26,7 @@
 #ifndef LIBRASTRO_THREADED
 rst_buffer_t *rst_global_buffer;
 #else
-pthread_key_t rst_key;
+__thread rst_buffer_t *rst_key = NULL;
 #endif
 
 static void rst_event_lls_ptr(rst_buffer_t * ptr, u_int16_t type,
@@ -91,7 +91,7 @@ static void __rst_init(rst_buffer_t *ptr,
 #ifdef LIBRASTRO_THREADED
   static int rst_key_initialized = 0;
   if (!rst_key_initialized) {
-    pthread_key_create(&rst_key, NULL);
+    rst_key = NULL;
     rst_key_initialized = 1;
   }
 #endif

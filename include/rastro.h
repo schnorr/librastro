@@ -282,9 +282,9 @@ extern rst_buffer_t *rst_global_buffer;
 #define RST_PTR (rst_global_buffer)
 #define RST_SET_PTR(ptr) (rst_global_buffer = ptr)
 #else
-extern pthread_key_t rst_key;
-#define RST_PTR ((rst_buffer_t *) pthread_getspecific(rst_key))
-#define RST_SET_PTR(ptr) pthread_setspecific(rst_key, (void *) ptr)
+extern __thread rst_buffer_t *rst_key;
+#define RST_PTR ((rst_buffer_t*)rst_key)
+#define RST_SET_PTR(ptr) (rst_key=(ptr));
 #endif
 
 #endif                          //_RASTRO_H_
