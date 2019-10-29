@@ -12,10 +12,10 @@ void *perform_work(void *arguments){
   int index = *((int *)arguments);
   rst_init(index, index);
   rst_event(3);
-  int sleep_time = 1 + rand() % NUM_THREADS;
+  int sleep_time = (1 + rand() % NUM_THREADS)*100;
   printf("THREAD %d: Started.\n", index);
-  printf("THREAD %d: Will be sleeping for %d seconds.\n", index, sleep_time);
-  sleep(sleep_time);
+  printf("THREAD %d: Will be sleeping for %d microseconds.\n", index, sleep_time);
+  usleep(sleep_time/1000000);
   printf("THREAD %d: Ended.\n", index);
   rst_event(4);
   rst_finalize();
