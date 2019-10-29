@@ -9,3 +9,7 @@ target_link_libraries(write1 rastro)
 
 add_executable(write2 write2.c auto-generated.c)
 target_link_libraries(write2 rastro)
+
+add_executable(thread thread.c auto-generated.c)
+target_link_libraries(thread rastro)
+target_link_libraries(thread pthread)
