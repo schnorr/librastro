@@ -133,7 +133,6 @@ static void __rst_init(rst_buffer_t *ptr,
 
 void rst_handle_signal (int signal)
 {
-  fprintf(stderr, "[rastro] Caught USR1 signal, flush buffers.\n", signal);
   rst_buffer_t *ptr = RST_PTR;
   rst_flush(ptr);
 }
