@@ -170,11 +170,15 @@ void rst_init_timestamp_ptr (rst_buffer_t *ptr,
 void rst_flush(rst_buffer_t * ptr)
 {
   size_t nbytes;
-  size_t n;
+  size_t n, a;
 
   nbytes = RST_BUF_COUNT(ptr);
-  n = write(RST_FD(ptr), RST_BUF_DATA(ptr), nbytes);
-  if (n != nbytes) {
+  a = 0;
+  do {
+    n = write(RST_FD(ptr), RST_BUF_DATA(ptr)+a, nbytes-a);
+    a += n;
+  }while (a < nbytes && n != -1);
+  if (a != nbytes) {
     fprintf(stderr, "[rastro] error writing rastro file\n");
   }
   RST_RESET(ptr);
